@@ -20,13 +20,18 @@ let editControlls = {
 editControlls.x1.onchange = editorChange;
 
 function editorChange(){
-	let updateBox = editorState.setBox.filter(x => x.selected)[0];
-	if(updateBox === undefined){return;}
+	let updateBox = {}
+	let loc = -1;
+	for(let i=0; i<editorState.setBox.length; i++){
+		if(editorState.setBox[i].selected){ loc = i; }
+	}
+	if(loc == -1){return;}
+
 	console.log("update");
-	updateBox.x1 = editControlls.x1;
-	updateBox.x2 = editControlls.x2;
-	updateBox.y1 = editControlls.y1;
-	updateBox.y2 = editControlls.y2;
+	editorState.setBox[loc].x1 = editControlls.x1.value;
+	updateBox.x2 = editControlls.x2.value;
+	updateBox.y1 = editControlls.y1.value;
+	updateBox.y2 = editControlls.y2.value;
 }
 
 
@@ -57,8 +62,8 @@ function reloadImage(){
 function drawBox(box){
 	context.fillStyle = "rgba(189, 195, 199, 150)";
 	context.globalAlpha = 0.5;
-		let width = (box.point1.x < box.point2.x) ? box.point2.x - box.point1.x : box.point1.x - box.point2.x;
-		let height = (box.point1.y < box.point2.y) ? box.point2.y - box.point1.y : box.point1.y - box.point2.y;
+		let width = box.point2.x - box.point1.x;
+		let height = box.point2.y - box.point1.y;
 		context.fillRect(box.point1.x, box.point1.y, width, height);
 
 		if(box.selected){
