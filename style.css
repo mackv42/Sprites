@@ -1,0 +1,17 @@
+#spriteSheetController{
+	border: 1px solid;
+}
+
+#selectedBoxData{
+	visibility: hidden;
+	padding-left: 10px;
+}
+
+#editor{
+
+}
+
+#controls{
+	width: 100%;
+}
+

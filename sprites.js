@@ -8,9 +8,7 @@ let spriteData = {
 }
 
 let editorState = {
-	"setBox": [{"point1": {}, "point2": {}}],
-	"selector": false,
-	"selectedBox": {}
+	"setBox": [{"point1": {}, "point2": {}, "selected": false}],
 }
 
 function imageIsLoaded() { 
@@ -26,8 +24,6 @@ function imageIsLoaded() {
 	canvas.height = this.height;
 	context.drawImage(img1, 0, 0);
   }
-
-  console.log(this);
 }
 
 function clear(){
@@ -42,12 +38,26 @@ function reloadImage(){
 function drawBox(box){
 	context.fillStyle = "rgba(189, 195, 199, 150)";
 	context.globalAlpha = 0.5;
-			console.log("drawingBox");
 		let width = (box.point1.x < box.point2.x) ? box.point2.x - box.point1.x : box.point1.x - box.point2.x;
 		let height = (box.point1.y < box.point2.y) ? box.point2.y - box.point1.y : box.point1.y - box.point2.y;
 		context.fillRect(box.point1.x, box.point1.y, width, height);
-	//context.globalAlpha = 1;
+
+		if(box.selected){
+			context.beginPath();
+			context.lineWidth = "3";
+			context.strokeStyle = "green";
+			context.rect(box.point1.x, box.point1.y, width, height);
+			context.stroke();
+		} else{
+			context.beginPath();
+			context.lineWidth = "1";
+			context.strokeStyle = "red";
+			context.rect(box.point1.x, box.point1.y, width, height);
+			context.stroke();
+		}
+	context.globalAlpha = 1;
 }
+
 
 function drawSelectBoxes(){
 	let boxes = editorState.setBox;
@@ -86,12 +96,15 @@ canvas.onclick = function(event){
     if(emptyObject(lastBox.point1)){
     	lastBox.point1 = {"x": x, "y": y};
     } else{
+    	if(editorState.setBox.length > 1){editorState.setBox[editorState.setBox.length - 2].selected = false; };
     	lastBox.point2 = {"x": x, "y": y};
+    	lastBox.selected = true;
     	//selectSection(lastBox)
+    	//editorState.selectedBox = lastBox;
     	clear();
     	reloadImage();
     	drawSelectBoxes();
-    	editorState.setBox.push({"point1": {}, "point2": {}});
+    	editorState.setBox.push({"point1": {}, "point2": {}, "selected": false});
     }
     console.log(x + " " + y);
 }
