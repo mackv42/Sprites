@@ -121,10 +121,10 @@ canvas.onclick = function(event){
   	let lastBox = editorState.setBox[editorState.setBox.length -1];
   	console.log(lastBox.point1);
     if(emptyObject(lastBox.point1)){
-    	lastBox.point1 = {"x": x, "y": y};
+    	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
     } else{
     	if(editorState.setBox.length > 1){editorState.setBox[editorState.setBox.length - 2].selected = false; };
-    	lastBox.point2 = {"x": x, "y": y};
+    	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
     	selectBox(lastBox);
     	//selectSection(lastBox)
     	//editorState.selectedBox = lastBox;
