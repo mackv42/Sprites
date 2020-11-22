@@ -1,7 +1,6 @@
 let canvas = document.getElementById("editor");
 let context = canvas.getContext("2d");
 
-
 let spriteData = {
 	"src": "",
 	"image": {}
@@ -10,6 +9,26 @@ let spriteData = {
 let editorState = {
 	"setBox": [{"point1": {}, "point2": {}, "selected": false}],
 }
+
+let editControlls = {
+	"x1": document.getElementById("x1"),
+	"y1": document.getElementById("y1"),
+	"x2": document.getElementById("x2"),
+	"y2": document.getElementById("y2")
+}
+
+editControlls.x1.onchange = editorChange;
+
+function editorChange(){
+	let updateBox = editorState.setBox.filter(x => x.selected)[0];
+	if(updateBox === undefined){return;}
+	console.log("update");
+	updateBox.x1 = editControlls.x1;
+	updateBox.x2 = editControlls.x2;
+	updateBox.y1 = editControlls.y1;
+	updateBox.y2 = editControlls.y2;
+}
+
 
 function imageIsLoaded() { 
   var img1 = new Image();
@@ -86,6 +105,14 @@ function emptyObject(obj){
 	return false;
 }
 
+function selectBox(box){
+	box.selected = true;
+	editControlls.x1.value = box.point1.x;
+	editControlls.x2.value = box.point2.x;
+	editControlls.y1.value = box.point1.y;
+	editControlls.y2.value = box.point2.y;
+}
+
 canvas.onclick = function(event){
 	let clickOffset = canvas.getBoundingClientRect();
     let x = event.clientX - clickOffset.left;
@@ -98,7 +125,7 @@ canvas.onclick = function(event){
     } else{
     	if(editorState.setBox.length > 1){editorState.setBox[editorState.setBox.length - 2].selected = false; };
     	lastBox.point2 = {"x": x, "y": y};
-    	lastBox.selected = true;
+    	selectBox(lastBox);
     	//selectSection(lastBox)
     	//editorState.selectedBox = lastBox;
     	clear();
