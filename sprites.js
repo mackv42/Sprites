@@ -9,8 +9,8 @@ let spriteData = {
 
 let editorState = {
 	"setBox": [{"point1": {}, "point2": {}}],
-	"editBox": {},
-	"selector": false
+	"selector": false,
+	"selectedBox": {}
 }
 
 function imageIsLoaded() { 
@@ -21,7 +21,6 @@ function imageIsLoaded() {
   img1.onload = function(){
   	spriteData.image = img1;
 	var clickOffset = canvas.getBoundingClientRect();
-
 
   	canvas.width = this.width;
 	canvas.height = this.height;
@@ -97,9 +96,25 @@ canvas.onclick = function(event){
     console.log(x + " " + y);
 }
 
-function downloadData(){
-  const obj = {"whatsup": "fucker", "array": ["this", "works", "like", "it", "should"]};
-  const json = JSON.stringify(obj);
+let downloadBtn = document.getElementById('downloadJson');
+
+function downloadData(evt){
+  evt.preventDefault();
+  const json = JSON.stringify(editorState);
+  const dataURL = `data:application/json,${json}`;
+
+  const anchor = document.getElementById("downloadJson");
+  anchor.setAttribute("download", "Your_data.json");
+  anchor.setAttribute("href", dataURL);
+
+  downloadBtn.removeEventListener("click", downloadData, false); 
+  evt.currentTarget.click();
+  downloadBtn.onclick = this;
+}
+
+editorState.onchange = function(){
+	console.log("hello");
+	  const json = JSON.stringify(editorState);
   const dataURL = `data:application/json,${json}`;
 
   const anchor = document.getElementById("downloadJson");
@@ -107,7 +122,9 @@ function downloadData(){
   anchor.setAttribute("href", dataURL);
 }
 
-downloadData();
+
+downloadBtn.onclick = downloadData;
+//downloadData();
 
 
 function selectSection(box){
