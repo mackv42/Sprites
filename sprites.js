@@ -11,13 +11,30 @@ let editorState = {
 }
 
 let editControlls = {
+	"name": document.getElementById("name"),
 	"x1": document.getElementById("x1"),
 	"y1": document.getElementById("y1"),
 	"x2": document.getElementById("x2"),
 	"y2": document.getElementById("y2")
 }
 
+editControlls.name.onchange = changeName;
 editControlls.x1.onchange = editorChange;
+editControlls.x2.onchange = editorChange;
+editControlls.y1.onchange = editorChange;
+editControlls.y2.onchange = editorChange;
+
+function changeName(){
+	let loc = -1;
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){ loc = i; }
+	}
+
+	if(loc == -1) return;
+
+	editorState.frames[loc]["name"] = editControlls.name.value;
+}
+
 
 function editorChange(){
 	let updateBox = {}
@@ -28,10 +45,13 @@ function editorChange(){
 	if(loc == -1){return;}
 
 	console.log("update");
-	editorState.frames[loc].x1 = editControlls.x1.value;
-	updateBox.x2 = editControlls.x2.value;
-	updateBox.y1 = editControlls.y1.value;
-	updateBox.y2 = editControlls.y2.value;
+	editorState.frames[loc].point1.x = editControlls.x1.value;
+	editorState.frames[loc].point2.x = editControlls.x2.value;
+	editorState.frames[loc].point1.y = editControlls.y1.value;
+	editorState.frames[loc].point2.y = editControlls.y2.value;
+	clear();
+	reloadImage();
+	drawSelectBoxes();
 }
 
 
