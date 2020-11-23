@@ -7,7 +7,7 @@ let spriteData = {
 }
 
 let editorState = {
-	"setBox": [{"point1": {}, "point2": {}, "selected": false}],
+	"frames": [{"point1": {}, "point2": {}, "selected": false}],
 }
 
 let editControlls = {
@@ -22,13 +22,13 @@ editControlls.x1.onchange = editorChange;
 function editorChange(){
 	let updateBox = {}
 	let loc = -1;
-	for(let i=0; i<editorState.setBox.length; i++){
-		if(editorState.setBox[i].selected){ loc = i; }
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){ loc = i; }
 	}
 	if(loc == -1){return;}
 
 	console.log("update");
-	editorState.setBox[loc].x1 = editControlls.x1.value;
+	editorState.frames[loc].x1 = editControlls.x1.value;
 	updateBox.x2 = editControlls.x2.value;
 	updateBox.y1 = editControlls.y1.value;
 	updateBox.y2 = editControlls.y2.value;
@@ -84,7 +84,7 @@ function drawBox(box){
 
 
 function drawSelectBoxes(){
-	let boxes = editorState.setBox;
+	let boxes = editorState.frames;
 
 	boxes.map(box => drawBox(box));
 }
@@ -123,12 +123,12 @@ canvas.onclick = function(event){
     let x = event.clientX - clickOffset.left;
     let y = event.clientY - clickOffset.top;
   	console.log(editorState);
-  	let lastBox = editorState.setBox[editorState.setBox.length -1];
+  	let lastBox = editorState.frames[editorState.frames.length -1];
   	console.log(lastBox.point1);
     if(emptyObject(lastBox.point1)){
     	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
     } else{
-    	if(editorState.setBox.length > 1){editorState.setBox[editorState.setBox.length - 2].selected = false; };
+    	if(editorState.frames.length > 1){editorState.frames[editorState.frames.length - 2].selected = false; };
     	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
     	selectBox(lastBox);
     	//selectSection(lastBox)
@@ -136,7 +136,7 @@ canvas.onclick = function(event){
     	clear();
     	reloadImage();
     	drawSelectBoxes();
-    	editorState.setBox.push({"point1": {}, "point2": {}, "selected": false});
+    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
     }
     console.log(x + " " + y);
 }
