@@ -24,6 +24,18 @@ editControlls.x2.onchange = editorChange;
 editControlls.y1.onchange = editorChange;
 editControlls.y2.onchange = editorChange;
 
+function getSelectedFrame(){
+	let loc = -1;
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){ loc = i; }
+
+	}
+
+	if(i == -1) return undefined;
+
+	return editorState.frames[i];
+}
+
 function changeName(){
 	let loc = -1;
 	for(let i=0; i<editorState.frames.length; i++){
