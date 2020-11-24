@@ -11,11 +11,22 @@ let editorState = {
 }
 
 let editControlls = {
+	"select": document.getElementById("select"),
+	"add": document.getElementById("add"),
 	"name": document.getElementById("name"),
 	"x1": document.getElementById("x1"),
 	"y1": document.getElementById("y1"),
 	"x2": document.getElementById("x2"),
 	"y2": document.getElementById("y2")
+}
+
+editControlls.select.onchange = function(){
+	if(this.checked){
+		//select on canvas click
+		editControlls.checked = false;
+	} else{
+		//do normal stuff
+	}
 }
 
 editControlls.name.onchange = changeName;
@@ -24,6 +35,57 @@ editControlls.x2.onchange = editorChange;
 editControlls.y1.onchange = editorChange;
 editControlls.y2.onchange = editorChange;
 
+
+function updateForms(){
+	let selectedFrame = getSelectedFrame();
+	editControlls.name.value = selectedFrame.name;
+	editControlls.x1.value = selectedFrame.point1.x;
+	editControlls.y1.value = selectedFrame.point1.y;
+	editControlls.x2.value = selectedFrame.point2.x;
+	editControlls.y2.value = selectedFrame.point2.y;
+}
+
+//checks if a point is inbounds of a box
+function inBounds(point, box){
+	if(point.x > box.point1.x && point.x < box.point2.x){
+		if(point.y >box.point1.y && point.y < box.point2.y){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+canvas.onclick = function(event){
+	let clickOffset = canvas.getBoundingClientRect();
+    let x = event.clientX - clickOffset.left;
+    let y = event.clientY - clickOffset.top;
+    if(editControlls.add.checked){
+	  	let lastBox = editorState.frames[editorState.frames.length -1];
+	    if(emptyObject(lastBox.point1)){
+	    	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
+	    } else{
+	    	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
+	    	selectSingleFrame(lastBox);
+
+	    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
+	    }
+	}
+
+	if(editControlls.select.checked){
+		let selectedFrame = {};
+		for(let i=0; i<editorState.frames.length; i++){
+			if(inBounds({x, y}, editorState.frames[i])){
+				selectSingleFrame(editorState.frames[i]);
+			}
+		}
+	}
+
+	clear();
+	reloadImage();
+	drawSelectBoxes();
+}
+
 function getSelectedFrame(){
 	let loc = -1;
 	for(let i=0; i<editorState.frames.length; i++){
@@ -31,9 +93,22 @@ function getSelectedFrame(){
 
 	}
 
-	if(i == -1) return undefined;
+	if(loc == -1) return undefined;
 
-	return editorState.frames[i];
+	return editorState.frames[loc];
+}
+
+function selectFrame(frame){
+	frame.selected = true;
+}
+
+function selectSingleFrame(frame){
+	let currentFrame = getSelectedFrame()
+	if(currentFrame){
+		currentFrame.selected = false;
+	}
+	selectFrame(frame);
+	updateForms();
 }
 
 function changeName(){
@@ -148,29 +223,6 @@ function selectBox(box){
 	editControlls.x2.value = box.point2.x;
 	editControlls.y1.value = box.point1.y;
 	editControlls.y2.value = box.point2.y;
-}
-
-canvas.onclick = function(event){
-	let clickOffset = canvas.getBoundingClientRect();
-    let x = event.clientX - clickOffset.left;
-    let y = event.clientY - clickOffset.top;
-  	console.log(editorState);
-  	let lastBox = editorState.frames[editorState.frames.length -1];
-  	console.log(lastBox.point1);
-    if(emptyObject(lastBox.point1)){
-    	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
-    } else{
-    	if(editorState.frames.length > 1){editorState.frames[editorState.frames.length - 2].selected = false; };
-    	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
-    	selectBox(lastBox);
-    	//selectSection(lastBox)
-    	//editorState.selectedBox = lastBox;
-    	clear();
-    	reloadImage();
-    	drawSelectBoxes();
-    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
-    }
-    console.log(x + " " + y);
 }
 
 let downloadBtn = document.getElementById('downloadJson');
