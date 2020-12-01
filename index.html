@@ -15,6 +15,8 @@
 		<canvas id="editor"></canvas>
 		<div id="controls">
 			<div>Select <input id="select" type="checkBox"/>
+			<div>Add <input id="add" type="checkBox"/></div>
+			<div><input id="grid" type="button" value="Grid"/> Row<input type="number" id="numRows"/> Col<input type="number" id="numColumns"/></div>
 				<div id="selectedBoxData">
 					name: <input id="name" type="text"/><br/>
 					x1: <input id="x1" type="number"/><br/>
@@ -23,11 +25,15 @@
 					y2: <input id="y2" type="number"/>
 				</div>
 			</div>
-			<div>Add <input id="add" type="checkBox"/></div>
+			<p>Add to group<select name="groups" id="groups"></select>
+				on Frame <select name="frameNum" id="frameNum"></select> <input id="addToGroup" value="Add" type="button"/>
+			</p>
+			<input id="addGroup" type="button" value="Add"/><input type="text" id="addGroupName"/>
 		</div>
 	</div>
 	<a id="downloadJson" href="#">Download</a>
 
 	<script src="sprites.js"></script>
+	<script src="forms.js"></script>
 </body>
 </html>

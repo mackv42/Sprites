@@ -8,47 +8,16 @@ let spriteData = {
 
 let editorState = {
 	"frames": [{"point1": {}, "point2": {}, "selected": false}],
+	"orignalImage": {},
+	"groups": []
 }
 
-let editControlls = {
-	"select": document.getElementById("select"),
-	"add": document.getElementById("add"),
-	"name": document.getElementById("name"),
-	"x1": document.getElementById("x1"),
-	"y1": document.getElementById("y1"),
-	"x2": document.getElementById("x2"),
-	"y2": document.getElementById("y2")
-}
 
-editControlls.select.onchange = function(){
-	if(this.checked){
-		//select on canvas click
-		editControlls.checked = false;
-	} else{
-		//do normal stuff
-	}
-}
-
-editControlls.name.onchange = changeName;
-editControlls.x1.onchange = editorChange;
-editControlls.x2.onchange = editorChange;
-editControlls.y1.onchange = editorChange;
-editControlls.y2.onchange = editorChange;
-
-
-function updateForms(){
-	let selectedFrame = getSelectedFrame();
-	editControlls.name.value = selectedFrame.name;
-	editControlls.x1.value = selectedFrame.point1.x;
-	editControlls.y1.value = selectedFrame.point1.y;
-	editControlls.x2.value = selectedFrame.point2.x;
-	editControlls.y2.value = selectedFrame.point2.y;
-}
 
 //checks if a point is inbounds of a box
 function inBounds(point, box){
-	if(point.x > box.point1.x && point.x < box.point2.x){
-		if(point.y >box.point1.y && point.y < box.point2.y){
+	if(point.x >= box.point1.x && point.x <= box.point2.x){
+		if(point.y >=box.point1.y && point.y <= box.point2.y){
 			return true;
 		}
 	}
@@ -56,35 +25,7 @@ function inBounds(point, box){
 	return false;
 }
 
-canvas.onclick = function(event){
-	let clickOffset = canvas.getBoundingClientRect();
-    let x = event.clientX - clickOffset.left;
-    let y = event.clientY - clickOffset.top;
-    if(editControlls.add.checked){
-	  	let lastBox = editorState.frames[editorState.frames.length -1];
-	    if(emptyObject(lastBox.point1)){
-	    	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
-	    } else{
-	    	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
-	    	selectSingleFrame(lastBox);
 
-	    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
-	    }
-	}
-
-	if(editControlls.select.checked){
-		let selectedFrame = {};
-		for(let i=0; i<editorState.frames.length; i++){
-			if(inBounds({x, y}, editorState.frames[i])){
-				selectSingleFrame(editorState.frames[i]);
-			}
-		}
-	}
-
-	clear();
-	reloadImage();
-	drawSelectBoxes();
-}
 
 function getSelectedFrame(){
 	let loc = -1;
@@ -98,15 +39,26 @@ function getSelectedFrame(){
 	return editorState.frames[loc];
 }
 
+function deleteSelectedFrame(){
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){
+			editorState.frames.splice(i, 1);
+		}
+	}
+}
+
 function selectFrame(frame){
 	frame.selected = true;
 }
 
 function selectSingleFrame(frame){
-	let currentFrame = getSelectedFrame()
-	if(currentFrame){
-		currentFrame.selected = false;
+
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){
+			editorState.frames[i].selected = false;
+		}
 	}
+
 	selectFrame(frame);
 	updateForms();
 }
@@ -122,26 +74,6 @@ function changeName(){
 	editorState.frames[loc]["name"] = editControlls.name.value;
 }
 
-
-function editorChange(){
-	let updateBox = {}
-	let loc = -1;
-	for(let i=0; i<editorState.frames.length; i++){
-		if(editorState.frames[i].selected){ loc = i; }
-	}
-	if(loc == -1){return;}
-
-	console.log("update");
-	editorState.frames[loc].point1.x = editControlls.x1.value;
-	editorState.frames[loc].point2.x = editControlls.x2.value;
-	editorState.frames[loc].point1.y = editControlls.y1.value;
-	editorState.frames[loc].point2.y = editControlls.y2.value;
-	clear();
-	reloadImage();
-	drawSelectBoxes();
-}
-
-
 function imageIsLoaded() { 
   var img1 = new Image();
   img1.src = this.src;
@@ -154,6 +86,7 @@ function imageIsLoaded() {
   	canvas.width = this.width;
 	canvas.height = this.height;
 	context.drawImage(img1, 0, 0);
+	editorState.originalImage = context.getImageData(0, 0, canvas.width, canvas.height);
   }
 }
 
@@ -225,49 +158,208 @@ function selectBox(box){
 	editControlls.y2.value = box.point2.y;
 }
 
-let downloadBtn = document.getElementById('downloadJson');
-
-function downloadData(evt){
-  evt.preventDefault();
-  const json = JSON.stringify(editorState);
-  const dataURL = `data:application/json,${json}`;
-
-  const anchor = document.getElementById("downloadJson");
-  anchor.setAttribute("download", "Your_data.json");
-  anchor.setAttribute("href", dataURL);
-
-  downloadBtn.removeEventListener("click", downloadData, false); 
-  evt.currentTarget.click();
-  downloadBtn.onclick = this;
+function createGroup( name ){
+	editorState.groups.push(name);
 }
 
-editorState.onchange = function(){
-	console.log("hello");
-	  const json = JSON.stringify(editorState);
-  const dataURL = `data:application/json,${json}`;
+function getGroupNames(){
+	return editorState.groups;
+}
 
-  const anchor = document.getElementById("downloadJson");
-  anchor.setAttribute("download", "Your_data.json");
-  anchor.setAttribute("href", dataURL);
+function getGroup( name ){
+	return editorState.frames.filter(x => x.group == name);
+}
+
+function groupExists(name){
+	let groups = getGroupNames();
+	for(let i=0; i<groups.length; i++){
+		if(groups[i] == name){
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function addToGroup(frame, name){
+	if(groupExists(name)){
+		frame.group = name;
+	}
+}
+
+function grid(frame, row, col){
+	let frames = [];
+	let width = (frame.point2.x - frame.point1.x)/col;
+	let height = (frame.point2.y - frame.point1.y)/row;
+	for(let i=0; i<row; i++){
+		for(let j=0; j<col; j++){
+			let tmp = {};
+			tmp.x = frame.point1.x+width*j;
+			tmp.y = frame.point1.y+height*i;
+			frames.push(new Object({
+				"point1": {"x": Math.floor(tmp.x), "y": Math.floor(tmp.y)},
+				"point2": {"x": Math.floor(tmp.x+width), "y": Math.floor(tmp.y+height)}
+			}));
+		}
+	}
+
+	return frames;
+}
+
+function getPoint(p, width){
+	if(p == 0){ return {"x": 0, "y": 0}}
+	let y = Math.floor(p/width);
+	let x = p-y*width;
+	return{"x": x, "y": y}
+}
+
+function getSurroundingPixels(img, point){
+	let data = img.data;
+	return{
+		"top": (0 == img.data[point - img.width*4+3]),
+		"left": (0 == img.data[point -4+3]) ,
+		"right": (0 == point + 4+3),
+		"bottom": (0 == point + img.width*4+3),
+		"topleft": (0==point - img.width*4 - 4+3),
+		"topright": (0==point - img.width*4 +4+3), 
+		"bottomleft": (0==point + img.width*4 -4+3),
+		"bottomright": (0==point + img.width*4 + 4+3)
+	}
 }
 
 
-downloadBtn.onclick = downloadData;
-//downloadData();
 
+function bounds(point, list){
+	let ret = [];
+	ret = list.filter(x => inBounds(point, x));
 
-function selectSection(box){
-	//Ui for adding data
+	return ret;
 }
 
-function updateSection(box){
 
+function getSurroundings(img, point){
+	let data = img.data;
+	return[
+		(250 <img.data[point - img.width*4+3]),
+		(250 < img.data[point -4+3]) ,
+		(250 < img.data[point + 4+3]),
+		 (250 < img.data[point + img.width*4+3]),
+		(250 < img.data[point - img.width*4 - 4+3]),
+		(250 < img.data[point - img.width*4 +4+3]), 
+		(250 < img.data[point + img.width*4 -4+3]),
+		(250 < img.data[point + img.width*4 + 4+3])
+	];
 }
 
-function editSection(){
+function noSurroundings(img, point){
+	let surroundings= getSurroundings(img, point);
+	for(let i=0; i<surroundings.length; i++){
+		if(surroundings[i]){
+			return false;
+		}
+	}
 
+	return true;
 }
 
-function loadSection(){
+function findNext(img, point, width){
+	if(point > img.length){
+		return undefined;
+	}
+	for(let i=0; i<width; i++){
+		if(img[point+(i*4)+3] > 250){
+			return point+(i*4);
+		}
+	}
 
+	return undefined;
+}
+
+function autoFrame2(img, point){
+	let checker = false;
+	let data = img.data;
+	let startingPoint = getPoint(point/4, img.width);
+	let dead = false;
+	let currentPoint = point;
+	let minX = startingPoint.x;
+	let minY = startingPoint.y;
+	let maxX = startingPoint.x;
+	let maxY = startingPoint.y;
+	let direction = false;
+
+	while(!dead){
+		if(noSurroundings(img, currentPoint)){
+			//start from wherever
+			if(!direction){
+				startingPoint.x = minX;
+				startingPoint.y += 1;
+
+				currentPoint = (startingPoint.x)*4 + (startingPoint.y*img.width)*4;
+					//console.log(maxX - minX);
+					currentPoint = findNext(data, currentPoint, maxX-minX);
+					if(currentPoint == undefined){
+						//console.log("hello");
+						//currentPoint = (startingPoint.x)*4 + (startingPoint.y*img.width)*4;
+						break;
+					}
+				direction = true;
+			} else{
+				direction = false;
+			}
+		}
+
+		let tmpPoint = getPoint(currentPoint/4, img.width);
+		if(tmpPoint.x > maxX){
+			maxX = tmpPoint.x;
+		}
+		if(tmpPoint.y > maxY){
+			maxY = tmpPoint.y;
+		}
+		if(tmpPoint.y < minY){
+			minY = tmpPoint.y;
+		}
+		if(tmpPoint.x < minX){
+			minX = tmpPoint.x;
+		}
+		if(direction){
+			currentPoint -= 4;
+		} else{
+			currentPoint+=4;
+		}
+
+	}
+
+	return {"point1": {"x": minX-1, "y": minY-1}, "point2": {"x": maxX+1, "y": maxY+1}}
+}
+
+
+function autoFrame(img){
+	let pixels = img.data;
+	let frameList = [];
+	for(let i=0; i<pixels.length; i+=4){
+		let inFrame = bounds(getPoint(i/4, img.width), frameList);
+		if(inFrame[1] != undefined){
+			i += inFrame[1].point2.x*4-inFrame[1].point1.x*4;
+
+			continue;
+		}
+
+		if(pixels[i+3] > 250){
+			if(i>pixels.length){
+				break;
+			}
+			frameList.push(autoFrame2(img, i));
+
+		}
+	}
+
+
+	for(let i=0; i<frameList.length; i++){
+		editorState.frames.push(frameList[i]);
+	}
+
+	clear();
+	reloadImage();
+	drawSelectBoxes();
+	return frameList;
 }
