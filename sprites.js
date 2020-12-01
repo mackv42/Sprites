@@ -25,7 +25,55 @@ function inBounds(point, box){
 	return false;
 }
 
+//2 dimensional check if a point is in a section of a line
+function inbetween(n, p1, p2){
+	if(n <= p2 && n >= p1){
+		return true;
+	}
 
+	return false;
+}
+
+//checks if 2 boxes intersect
+function interSect(box1, box2){
+	let width1 = box1.point1.x2-box1.point1.x1;
+	let width2 = box2.point1.x2-box2.point1.x1;
+	let height1 = box1.point1.y2-box1.point1.y1;
+	let height2 = box2.point1.y2-box2.point1.y1;
+	if(inBounds(box1.point1, box2)){
+		return true;
+	}
+
+	if(inBounds(box1.point2, box2)){
+		return true;
+	}
+
+	if(inBounds(box2.point1, box1)){
+		return true;
+	}
+
+	if(inBounds(box2.point2, box1)){
+		return true;
+	}
+
+	if(inbetween(box1.point1.x, box2.point1.x, box2.point2.x)){
+		if(box1.point1.y < box2.point2.y){
+			if(inbetween(box1.point2.y, box2.point1.y, box2.point2.y)){
+				return true;
+			}
+		}
+	}
+
+	if(inbetween(box2.point1.x, box1.point1.x, box1.point2.x)){
+		if(box2.point1.y < box1.point2.y){
+			if(inbetween(box2.point2.y, box1.point1.y, box1.point2.y)){
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 function getSelectedFrame(){
 	let loc = -1;
@@ -289,17 +337,13 @@ function autoFrame2(img, point){
 
 	while(!dead){
 		if(noSurroundings(img, currentPoint)){
-			//start from wherever
 			if(!direction){
 				startingPoint.x = minX;
 				startingPoint.y += 1;
 
 				currentPoint = (startingPoint.x)*4 + (startingPoint.y*img.width)*4;
-					//console.log(maxX - minX);
 					currentPoint = findNext(data, currentPoint, maxX-minX);
 					if(currentPoint == undefined){
-						//console.log("hello");
-						//currentPoint = (startingPoint.x)*4 + (startingPoint.y*img.width)*4;
 						break;
 					}
 				direction = true;
@@ -329,9 +373,11 @@ function autoFrame2(img, point){
 
 	}
 
-	return {"point1": {"x": minX-1, "y": minY-1}, "point2": {"x": maxX+1, "y": maxY+1}}
+	return {"point1": {"x": minX, "y": minY-1}, "point2": {"x": maxX+1, "y": maxY+1}}
 }
 
+function min(n1, n2){ return (n1 <= n2)? n1:n2}
+function max(n1, n2){ return (n1 >= n2)? n1:n2}
 
 function autoFrame(img){
 	let pixels = img.data;
@@ -353,13 +399,48 @@ function autoFrame(img){
 		}
 	}
 
-
-	for(let i=0; i<frameList.length; i++){
-		editorState.frames.push(frameList[i]);
+	for(let i=0; i<frameList.length-1; i++){
+		for(let j=0; j<frameList.length-1; j++){
+			if(j == i) continue;
+			if(frameList[j].point1){
+				if(interSect(frameList[i], frameList[j])){
+					
+					frameList.splice(i, 1, new Object({
+						"point1": {
+							"x": min(frameList[i].point1.x, frameList[j].point1.x),
+							"y": min(frameList[i].point1.y, frameList[j].point1.y) },
+						"point2": {
+							"x": max(frameList[i].point2.x, frameList[j].point2.x),
+							"y": max(frameList[i].point2.y, frameList[j].point2.y)
+						}
+					}));
+				}
+			}	 else{break;}
+			
+			}
 	}
 
-	clear();
+	for(let i=0; i<frameList.length-1; i++){
+		for(let j=0; j<frameList.length-1; j++){
+			if(j == i){ continue; }
+			if(frameList[i].point1.x == frameList[j].point1.x && frameList[i].point1.y == frameList[j].point1.y){
+				frameList.splice(j, 1);
+				if(i > 0) i--;
+			}
+		}
+	}
+	
+
+
+	return frameList;
+}
+
+function addFrames(){
+	let frames = autoFrame(editorState.originalImage);
+	for(let i=0; i<frames.length; i++){
+		editorState.frames.push(frames[i]);
+	}
+		clear();
 	reloadImage();
 	drawSelectBoxes();
-	return frameList;
 }
