@@ -102,11 +102,10 @@ function editorChange(){
 	}
 	if(loc == -1){return;}
 
-	console.log("update");
-	editorState.frames[loc].point1.x = editControlls.x1.value;
-	editorState.frames[loc].point2.x = editControlls.x2.value;
-	editorState.frames[loc].point1.y = editControlls.y1.value;
-	editorState.frames[loc].point2.y = editControlls.y2.value;
+	editorState.frames[loc].point1.x = parseInt(editControlls.x1.value);
+	editorState.frames[loc].point2.x = parseInt(editControlls.x2.value);
+	editorState.frames[loc].point1.y = parseInt(editControlls.y1.value);
+	editorState.frames[loc].point2.y = parseInt(editControlls.y2.value);
 	clear();
 	reloadImage();
 	drawSelectBoxes();
