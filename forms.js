@@ -116,7 +116,18 @@ let downloadBtn = document.getElementById('downloadJson');
 
 function downloadData(evt){
   evt.preventDefault();
-  const json = JSON.stringify(editorState);
+  let newJson = {"frames": []};
+  for(let i=0; i<editorState.frames.length; i++){
+  	//if it has data
+  	if(Object.keys(editorState.frames[i].point1).length > 0){
+  		//we download that
+  		newJson.frames.push(new Object({"name": editorState.frames[i].name, 
+  			"group": editorState.frames[i].group, 
+  			"point1": editorState.frames[i].point1, 
+  			"point2": editorState.frames[i].point2}));
+  	}
+  }
+  const json = JSON.stringify(newJson);
   const dataURL = `data:application/json,${json}`;
 
   const anchor = document.getElementById("downloadJson");
