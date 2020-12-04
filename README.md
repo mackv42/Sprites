@@ -7,3 +7,11 @@ Core Functionality:
   Naming frames
   Adding frames to different groups
   'Autoframe' function that automatically frames clustered pixels that are visible
+
+# Todo
+Show group of frames when selected
+Animate groups of frames in app
+
+# Bugs
+Some funny behavior with auto frame function sometimes will create multiple frames over 1 sprite
+Certain ways spritesheets are organized will cause it to create a large frame over 1 group
