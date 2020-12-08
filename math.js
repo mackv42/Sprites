@@ -1,3 +1,6 @@
+function min(n1, n2){ return (n1 <= n2)? n1:n2}
+function max(n1, n2){ return (n1 >= n2)? n1:n2}
+
 function getPoint(p, width){
 	if(p == 0){ return {"x": 0, "y": 0}}
 	let y = Math.floor(p/width);

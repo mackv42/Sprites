@@ -274,9 +274,6 @@ function autoFrame2(img, point){
 	return {"point1": {"x": minX, "y": minY-1}, "point2": {"x": maxX+1, "y": maxY+1}}
 }
 
-function min(n1, n2){ return (n1 <= n2)? n1:n2}
-function max(n1, n2){ return (n1 >= n2)? n1:n2}
-
 function autoFrame(img){
 	let pixels = img.data;
 	let frameList = [];
