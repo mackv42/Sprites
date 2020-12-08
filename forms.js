@@ -40,14 +40,17 @@ canvas.onclick = function(event){
     let x = event.clientX - clickOffset.left;
     let y = event.clientY - clickOffset.top;
     if(editControlls.add.checked){
-	  	let lastBox = editorState.frames[editorState.frames.length -1];
-	    if(emptyObject(lastBox.point1)){
-	    	lastBox.point1 = {"x": Math.floor(x), "y": Math.floor(y)};
+	  	let selectedPoint = editorState.selectedPoint;
+	    if(selectedPoint === undefined){
+	    	editorState.selectedPoint = new Object({"x": Math.floor(x), "y": Math.floor(y)});
 	    } else{
-	    	lastBox.point2 = {"x": Math.floor(x), "y": Math.floor(y)};
-	    	selectSingleFrame(lastBox);
-
-	    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
+	    	
+	    	let addedBox = {"point1": {"x": (selectedPoint.x < x)? selectedPoint.x:Math.floor(x), "y": (selectedPoint.y < y)?selectedPoint.y:Math.floor(y)}, 
+	    					"point2": {"x": (selectedPoint.x < x)? Math.floor(x):selectedPoint.x, "y": (selectedPoint.y < y)?Math.floor(y):selectedPoint.y}};
+	    	
+	    	editorState.frames.push(addedBox);
+	    	selectSingleFrame(addedBox);
+	    	editorState.selectedPoint = undefined;
 	    }
 	} else if(editControlls.select.checked){
 		let selectedFrame = {};

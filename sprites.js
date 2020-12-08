@@ -7,7 +7,8 @@ let spriteData = {
 let editorState = {
 	"frames": [{"point1": {}, "point2": {}, "selected": false}],
 	"orignalImage": {},
-	"groups": []
+	"groups": [],
+	"selectedPoint": undefined
 }
 
 
