@@ -49,9 +49,7 @@ canvas.onclick = function(event){
 
 	    	editorState.frames.push({"point1": {}, "point2": {}, "selected": false});
 	    }
-	}
-
-	if(editControlls.select.checked){
+	} else if(editControlls.select.checked){
 		let selectedFrame = {};
 		for(let i=0; i<editorState.frames.length; i++){
 			if(inBounds({x, y}, editorState.frames[i])){
