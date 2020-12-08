@@ -2,8 +2,7 @@ let canvas = document.getElementById("editor");
 let context = canvas.getContext("2d");
 
 function clear(){
-	context.fillStyle = "white";
-	context.fillRect(0, 0, canvas.width, canvas.height);
+	context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function reloadImage(){

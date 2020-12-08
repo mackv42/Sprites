@@ -322,3 +322,30 @@ function addFrames(){
 	reloadImage();
 	drawSelectBoxes();
 }
+
+function addFramesInArea(x1, y1, x2, y2){
+	//refresh context so we only have the original image
+	clear();
+	reloadImage();
+
+	//get data from just this section
+	let data = context.getImageData(x1, y1, x2-x1, y2-y1);
+	console.log(data);
+	let frames = autoFrame(data);
+	console.log(frames);
+	for(let i=0; i<frames.length; i++){
+		editorState.frames.push({"point1": {"x": frames[i].point1.x+x1, "y": frames[i].point1.y+y1}, 
+								 "point2": {"x": frames[i].point2.x+x1, "y": frames[i].point2.y+y1}});
+
+	}
+
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected == true){
+			editorState.frames.splice(i, 1);
+		}
+	}
+
+	clear();
+	reloadImage();
+	drawSelectBoxes();
+}

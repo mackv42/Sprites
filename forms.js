@@ -140,15 +140,19 @@ function downloadData(evt){
   downloadBtn.onclick = this;
 }
 
-
+let autoFrameBtn = document.getElementById("autoFrame");
 let groupsDropdown = document.getElementById("groups");
 let frameNumDropdown = document.getElementById("frameNum");
 let addGroup = document.getElementById("addGroupName");
 let addGroupBtn = document.getElementById("addGroup");
 let addToGroupBtn = document.getElementById("addToGroup");
 
-addToGroupBtn.onclick = function(){
+autoFrameBtn.onclick = function(){
+	let selectedFrame = getSelectedFrame();
+	addFramesInArea(selectedFrame.point1.x, selectedFrame.point1.y, selectedFrame.point2.x, selectedFrame.point2.y);
+}
 
+addToGroupBtn.onclick = function(){
 	for(let i=0; i<editorState.frames.length; i++){
 		if(editorState.frames[i].selected){
 			addToGroup(editorState.frames[i], groupsDropdown.value);
