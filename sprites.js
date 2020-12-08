@@ -157,24 +157,6 @@ function grid(frame, row, col){
 	return frames;
 }
 
-
-
-function getSurroundingPixels(img, point){
-	let data = img.data;
-	return{
-		"top": (0 == img.data[point - img.width*4+3]),
-		"left": (0 == img.data[point -4+3]) ,
-		"right": (0 == point + 4+3),
-		"bottom": (0 == point + img.width*4+3),
-		"topleft": (0==point - img.width*4 - 4+3),
-		"topright": (0==point - img.width*4 +4+3), 
-		"bottomleft": (0==point + img.width*4 -4+3),
-		"bottomright": (0==point + img.width*4 + 4+3)
-	}
-}
-
-
-
 function bounds(point, list){
 	let ret = [];
 	ret = list.filter(x => inBounds(point, x));
