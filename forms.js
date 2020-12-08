@@ -124,10 +124,13 @@ function downloadData(evt){
   		//we download that
   		newJson.frames.push(new Object({"name": editorState.frames[i].name, 
   			"group": editorState.frames[i].group, 
-  			"point1": editorState.frames[i].point1, 
-  			"point2": editorState.frames[i].point2}));
+  			"x": editorState.frames[i].point1.x,
+  			"y": editorState.frames[i].point1.y,
+  			"width": editorState.frames[i].point2.x - editorState.frames[i].point1.x,
+  			"height": editorState.frames[i].point2.y - editorState.frames[i].point1.y }));
   	}
   }
+  
   const json = JSON.stringify(newJson);
   const dataURL = `data:application/json,${json}`;
 
