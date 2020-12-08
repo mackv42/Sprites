@@ -147,8 +147,12 @@ let addGroupBtn = document.getElementById("addGroup");
 let addToGroupBtn = document.getElementById("addToGroup");
 
 addToGroupBtn.onclick = function(){
-	let selectedFrame = getSelectedFrame();
-	addToGroup(selectedFrame, groupsDropdown.value);
+
+	for(let i=0; i<editorState.frames.length; i++){
+		if(editorState.frames[i].selected){
+			addToGroup(editorState.frames[i], groupsDropdown.value);
+		}
+	}
 }
 
 addGroupBtn.onclick = function(){
