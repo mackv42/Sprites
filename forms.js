@@ -27,8 +27,8 @@ function updateForms(){
 
 let uploadImageBtn = document.getElementById("uploadImage");
 
-uploadImageBtn.addEventListener('load', function() {
-  document.querySelector('input[type="file"]').addEventListener('change', function() {
+window.addEventListener('load', function() {
+  uploadImage.addEventListener('change', function() {
       if (this.files && this.files[0]) {
           var img = document.querySelector('img');  // $('img')[0]
           img.src = URL.createObjectURL(this.files[0]); // set src to blob url
@@ -36,6 +36,34 @@ uploadImageBtn.addEventListener('load', function() {
           console.log(img.src);
       }
   });
+});
+
+let uploadSpriteData = document.getElementById("uploadSpriteData");
+
+window.addEventListener('load', function(){
+	uploadSpriteData.addEventListener('change', function(){
+	  if (this.files && this.files[0]) {
+          let files = this.files
+            var fr = new FileReader();
+  
+		  fr.onload = function(e) { 
+		  console.log(e);
+		    var result = JSON.parse(e.target.result);
+		    for(let i=0; i<result.frames.length; i++){
+		    	editorState.frames.push(new Object({"point1":{"x": result.frames[i].x, "y": result.frames[i].y},
+		    										"point2": {"x": result.frames[i].x+result.frames[i].width, 
+		    													"y": result.frames[i].y+result.frames[i].height}}));
+		    }
+		      clear();
+			  reloadImage();
+			  drawSelectBoxes();
+		  }
+		  
+
+		  fr.readAsText(files.item(0));
+
+      }
+    });
 });
 
 

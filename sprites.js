@@ -11,7 +11,6 @@ let editorState = {
 	"selectedPoint": undefined
 }
 
-
 function getSelectedFrame(){
 	let loc = -1;
 	for(let i=0; i<editorState.frames.length; i++){
